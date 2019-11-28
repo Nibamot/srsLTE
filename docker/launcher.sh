@@ -10,8 +10,8 @@ trap _term SIGTERM
 env
 
 ./dns_replace.sh
-cat /srsLTE/build/srsenb/src/enb.conf
-./srsLTE/build/srsenb/src/srsenb /srsLTE/build/srsenb/src/enb.conf &
+cat /etc/srslte/enb.conf
+./srsLTE/build/srsenb/src/srsenb &
 
 child=$!
 

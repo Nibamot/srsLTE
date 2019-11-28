@@ -10,15 +10,17 @@ RUN apt-get update && \
     apt-get -yq install cmake git libfftw3-dev libmbedtls-dev libboost-program-options-dev libconfig++-dev libsctp-dev libuhd-dev
 
 # Fetching srsLTE
-RUN git clone https://github.com/5g-empower/srsLTE.git
-RUN cd srsLTE && mkdir build && cd build && cmake ../ && make && make install
+RUN git clone https://github.com/5g-empower/srsLTE.git && cd /srsLTE && git checkout tags/release_19_09
+ADD conf/CMakeLists.txt /srsLTE/
+RUN cd /srsLTE && mkdir build && cd build && cmake ../ && make && make install
+RUN ./usr/lib/uhd/utils/uhd_images_downloader.py
 
 # Add configuration files from SRS
-ADD enb.conf /srsLTE/build/srsenb/src/
-ADD drb.conf /srsLTE/build/srsenb/src/
-ADD rr.conf /srsLTE/build/srsenb/src/
-ADD sib.conf /srsLTE/build/srsenb/src/
-ADD sib.conf.mbsfn /srsLTE/build/srsenb/src/
+ADD conf/enb.conf /etc/srslte/
+ADD conf/drb.conf /etc/srslte/
+ADD conf/rr.conf /etc/srslte/
+ADD conf/sib.conf /etc/srslte/
+ADD conf/sib.conf.mbsfn /etc/srslte/
 
 # Add Kubernetes launch scripts
 ADD dns_replace.sh /
@@ -33,6 +35,8 @@ ENV mcc=222
 ENV mnc=93
 ENV n_prb=25
 ENV dl_earfcn=3400
+
+RUN apt-get -yq install iproute2
 
 ADD launcher.sh /
 

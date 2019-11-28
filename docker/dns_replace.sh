@@ -1,12 +1,12 @@
 
-sed -i 's/ENB_ID_REPLACE/'$enb_id'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/PHY_CELL_ID_REPLACE/'$phy_cell_id'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/CELL_ID_REPLACE/'$cell_id'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/TAC_REPLACE/'$tac'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/MCC_REPLACE/'$mcc'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/MNC_REPLACE/'$mnc'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/N_PRB_REPLACE/'$n_prb'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/DL_EARFCN_REPLACE/'$dl_earfcn'/g' /srsLTE/build/srsenb/src/enb.conf
+sed -i 's/ENB_ID_REPLACE/'$enb_id'/g' /etc/srslte/enb.conf
+sed -i 's/PHY_CELL_ID_REPLACE/'$phy_cell_id'/g' /etc/srslte/enb.conf
+sed -i 's/CELL_ID_REPLACE/'$cell_id'/g' /etc/srslte/enb.conf
+sed -i 's/TAC_REPLACE/'$tac'/g' /etc/srslte/enb.conf
+sed -i 's/MCC_REPLACE/'$mcc'/g' /etc/srslte/enb.conf
+sed -i 's/MNC_REPLACE/'$mnc'/g' /etc/srslte/enb.conf
+sed -i 's/N_PRB_REPLACE/'$n_prb'/g' /etc/srslte/enb.conf
+sed -i 's/DL_EARFCN_REPLACE/'$dl_earfcn'/g' /etc/srslte/enb.conf
 
 
 if [ "$empower_controller" = "yes" ]; then
@@ -71,6 +71,6 @@ else
     LOCAL_POD_ADDR=$local_pod_addr
 fi
 
-sed -i 's/EPC_REPLACE/'"$EPC_POD_ADDR"'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/LOCAL_REPLACE/'$LOCAL_POD_ADDR'/g' /srsLTE/build/srsenb/src/enb.conf
-sed -i 's/EMPOWER_REPLACE/'$EMPOWER_SERVICE_ADDR'/g' /srsLTE/build/srsenb/src/enb.conf
+sed -i 's/EPC_REPLACE/'"$EPC_POD_ADDR"'/g' /etc/srslte/enb.conf
+sed -i 's/LOCAL_REPLACE/'$LOCAL_POD_ADDR'/g' /etc/srslte/enb.conf
+sed -i 's/EMPOWER_REPLACE/'$EMPOWER_SERVICE_ADDR'/g' /etc/srslte/enb.conf
