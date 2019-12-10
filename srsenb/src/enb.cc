@@ -112,6 +112,14 @@ int enb::init(const all_args_t& args_)
     return SRSLTE_ERROR;
   }
 
+  // Create an instance of the Empower agent
+  std::unique_ptr<Empower::Agent::Agent> lte_empowerAgent =
+      std::unique_ptr<Empower::Agent::Agent>(new Empower::Agent::Agent());
+  if (!lte_empowerAgent) {
+    log.console("Error initializing Empower agent.\n");
+    return SRSLTE_ERROR;
+  }
+
   // Init layers
   if (lte_radio->init(args.rf, lte_phy.get())) {
     log.console("Error initializing radio.\n");
@@ -128,9 +136,21 @@ int enb::init(const all_args_t& args_)
     return SRSLTE_ERROR;
   }
 
+  // Init the Empower agent
+  if (lte_empowerAgent->init(args)) {
+      return SRSLTE_ERROR;
+  }
+
   stack = std::move(lte_stack);
   phy   = std::move(lte_phy);
   radio = std::move(lte_radio);
+  empowerAgent = std::move(lte_empowerAgent);
+
+  // Attempt to start the Empower agent thread
+  if (empowerAgent->start()) {
+    log.console("Error starting the Empower agent thread.\n");
+    return SRSLTE_ERROR;
+  }
 
   log.console("\n==== eNodeB started ===\n");
   log.console("Type <t> to view trace\n");

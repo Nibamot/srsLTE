@@ -34,7 +34,7 @@ if (RPATH)
 endif (RPATH)
 
 
-add_executable(srsenb main.cc enb.cc parser.cc enb_cfg_parser.cc metrics_stdout.cc metrics_csv.cc)
+add_executable(srsenb main.cc enb.cc parser.cc enb_cfg_parser.cc metrics_stdout.cc metrics_csv.cc empoweragent.cc)
 target_link_libraries(srsenb  srsenb_radio
                               srsenb_phy
                               srsenb_stack
@@ -50,7 +50,8 @@ target_link_libraries(srsenb  srsenb_radio
                               ${Boost_LIBRARIES} 
                               ${SEC_LIBRARIES}
                               ${LIBCONFIGPP_LIBRARIES}
-                              ${SCTP_LIBRARIES})
+                              ${SCTP_LIBRARIES}
+                              EmpowerAgentProto)
 
 if (RPATH)
   set_target_properties(srsenb PROPERTIES INSTALL_RPATH ".")
