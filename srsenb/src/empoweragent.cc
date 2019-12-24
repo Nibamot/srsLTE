@@ -61,7 +61,7 @@ bool Agent::init(const srsenb::all_args_t& all_args)
     mPrivateBits->cellId = all_args.stack.s1ap.cell_id;
 
     // Take the enb_id
-    mPrivateBits->enbId = all_args.stack.s1ap.enb_id
+    mPrivateBits->enbId = all_args.stack.s1ap.enb_id;
 
     // Initialize the sequence number to be used when sending messages
     mPrivateBits->sequence = 1;
