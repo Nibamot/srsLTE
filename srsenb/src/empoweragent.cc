@@ -33,6 +33,9 @@ struct Agent::PrivateBits {
   /// The cell identifier (from enb.cell_id)
   std::uint16_t cellId;
 
+  /// The eNodeB identifier (from enb.enb_id)
+  std::uint32_t enbId;
+
   /// @}
 
   std::uint32_t sequence;
@@ -55,7 +58,10 @@ bool Agent::init(const srsenb::all_args_t& all_args)
     mPrivateBits->delayms           = all_args.empoweragent.delayms;
 
     // Take the cell_id
-    mPrivateBits->cellId = all_args.stack.s1ap.enb_id;
+    mPrivateBits->cellId = all_args.stack.s1ap.cell_id;
+
+    // Take the enb_id
+    mPrivateBits->enbId = all_args.stack.s1ap.enb_id
 
     // Initialize the sequence number to be used when sending messages
     mPrivateBits->sequence = 1;
@@ -271,7 +277,10 @@ void Agent::mainLoop()
 
 void Agent::fillHeader(CommonHeaderEncoder& headerEncoder)
 {
-  headerEncoder.sequence(mPrivateBits->sequence).cellIdentifier(mPrivateBits->cellId);
+  headerEncoder.sequence(mPrivateBits->sequence)
+      .cellIdentifier(mPrivateBits->cellId)
+      .elementId(static_cast<std::uint64_t>(mPrivateBits->enbId));
+
   ++(mPrivateBits->sequence);
 }
 
