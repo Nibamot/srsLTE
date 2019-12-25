@@ -159,12 +159,6 @@ void Agent::mainLoop()
 
             switch (messageDecoder.header().entityClass()) {
               case EntityClass::HELLO_SERVICE:
-                // We expect a reply...
-                if (messageDecoder.isRequest()) {
-                  std::cerr << "AGENT: *** got unexpected REQUEST for HELLO_SERVICE\n";
-                  break;
-                }
-
                 {
                   // We don't really care about the reply.
                   std::cout << "AGENT: got a REPLY for HELLO_SERVICE (discarded)\n";
@@ -172,11 +166,10 @@ void Agent::mainLoop()
                 break;
 
               case EntityClass::CAPABILITIES_SERVICE:
-                if (!messageDecoder.isRequest()) {
-                  std::cerr << "AGENT: *** got unexpected REPLY for the CAPABILITIES_SERVICE\n";
-                  break;
+                {
+                  // Prepare caps response
+                  std::cout << "AGENT: got a REQUEST for CAPABILITIES_SERVICE (discarded)\n";
                 }
-
 #if 0
                 {
                     // Insert capabilities reply here
@@ -199,34 +192,6 @@ void Agent::mainLoop()
 
                 break;
 
-              case EntityClass::ECHO_SERVICE:
-                std::cout << "AGENT: got REQUEST for ECHO_SERVICE\n";
-
-                {
-                  TLVBinaryData tlv;
-                  messageDecoder.get(tlv);
-                  // tlv.stringData(tlv.stringData() + " Here I am!");
-
-                  MessageEncoder messageEncoder(writeBuffer);
-
-                  fillHeader(messageEncoder.header());
-
-                  messageEncoder.header()
-                      .messageClass(MessageClass::RESPONSE_SUCCESS)
-                      .entityClass(EntityClass::ECHO_SERVICE);
-
-                  messageEncoder.add(tlv).end();
-
-                  std::cout << "AGENT: sending REPLY for ECHO_SERVICE\n";
-
-                  // Write a message to the socket
-                  size_t len = io.writeMessage(messageEncoder.data());
-
-                  std::cout << "AGENT: wrote " << len << " bytes\n";
-                }
-
-                break;
-
               default:
                 std::cerr << "AGENT: *** got unexpected message class\n";
                 break;
@@ -234,6 +199,7 @@ void Agent::mainLoop()
           }
         }
       } else if (performPeriodicTasks) {
+
         // Timeout expired
         std::cout << "AGENT: waiting for messages... "
                      "(isConnectionClosed() is "
@@ -278,7 +244,6 @@ void Agent::mainLoop()
 void Agent::fillHeader(CommonHeaderEncoder& headerEncoder)
 {
   headerEncoder.sequence(mPrivateBits->sequence)
-      .cellIdentifier(mPrivateBits->cellId)
       .elementId(static_cast<std::uint64_t>(mPrivateBits->enbId));
 
   ++(mPrivateBits->sequence);
