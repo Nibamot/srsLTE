@@ -30,8 +30,17 @@ struct Agent::PrivateBits {
   //         requests.
   std::uint32_t delayms;
 
-  /// The cell identifier (from enb.cell_id)
-  std::uint16_t cellId;
+  /// The cell identifier (from enb.pci)
+  std::uint16_t pci;
+
+  /// The cell dl_earfcn (from rf.dl_earfcn)
+  std::uint32_t dlEarfcn;
+
+  /// The cell ul_earfcn (from rf.ul_earfcn)
+  std::uint32_t ulEarfcn;
+
+  /// The cell n_prbs (from enb.n_prbs)
+  std::uint8_t nPrb;
 
   /// The eNodeB identifier (from enb.enb_id)
   std::uint32_t enbId;
@@ -57,8 +66,17 @@ bool Agent::init(const srsenb::all_args_t& all_args)
     mPrivateBits->controllerPort    = all_args.empoweragent.controller_port;
     mPrivateBits->delayms           = all_args.empoweragent.delayms;
 
-    // Take the cell_id
-    mPrivateBits->cellId = all_args.stack.s1ap.cell_id;
+    // Take the pci
+    mPrivateBits->pci = all_args.enb.pci;
+
+    // Take the dl_earfcn
+    mPrivateBits->dlEarfcn = all_args.enb.dl_earfcn;
+
+    // Take the ul_earfcn
+    mPrivateBits->ulEarfcn = all_args.enb.ul_earfcn;
+
+    // Take the n_prbs
+    mPrivateBits->nPrb = all_args.enb.n_prb;
 
     // Take the enb_id
     mPrivateBits->enbId = all_args.stack.s1ap.enb_id;
@@ -167,29 +185,31 @@ void Agent::mainLoop()
 
               case EntityClass::CAPABILITIES_SERVICE:
                 {
+
                   // Prepare caps response
                   std::cout << "AGENT: got a REQUEST for CAPABILITIES_SERVICE (discarded)\n";
+
+                  MessageEncoder messageEncoder(writeBuffer);
+                  fillHeader(messageEncoder.header());
+                  messageEncoder.header()
+                      .messageClass(MessageClass::RESPONSE_SUCCESS)
+                      .entityClass(EntityClass::CAPABILITIES_SERVICE);
+
+                  // Add the cells TLV to the message
+                  TLVCell tlvCell;
+                  tlvCell
+                    .pci(mPrivateBits->pci)
+                    .nPrb(mPrivateBits->nPrb)
+                    .dlEarfcn(mPrivateBits->dlEarfcn)
+                    .ulEarfcn(mPrivateBits->ulEarfcn);
+
+                  messageEncoder.add(tlvCell).end();
+
+                  // Send the HELLO request
+                  size_t len = io.writeMessage(messageEncoder.data());
+                  std::cout << "AGENT: sent RESPONSE for CAPABILITIES_SERVICE (" << len << " bytes)\n";
+
                 }
-#if 0
-                {
-                    // Insert capabilities reply here
-                    TLVCapabilities tlvCap;
-                    // tlvCap.setThis(...).setThat(...).set(...);
-                    MessageEncoder messageEncoder(writeBuffer);
-
-                    setupCommonHeaderFields(messageEncoder.header());
-
-                    messageEncoder.header()
-                           .messageClass(MessageClass::RESPONSE_SUCCESS)
-                           .entityClass(EntityClass::CAPABILITIES_SERVICE);
-
-                    //
-
-
-                }
-
-#endif
-
                 break;
 
               default:
@@ -216,7 +236,9 @@ void Agent::mainLoop()
 
           MessageEncoder messageEncoder(writeBuffer);
           fillHeader(messageEncoder.header());
-          messageEncoder.header().messageClass(MessageClass::REQUEST_SET).entityClass(EntityClass::HELLO_SERVICE);
+          messageEncoder.header()
+              .messageClass(MessageClass::REQUEST_SET)
+              .entityClass(EntityClass::HELLO_SERVICE);
 
           // Add the periodicity TLV to the message, and end
           // adding.
@@ -226,8 +248,6 @@ void Agent::mainLoop()
           size_t len = io.writeMessage(messageEncoder.data());
           std::cout << "AGENT: sent REQUEST for HELLO_SERVCE (" << len << " bytes)\n";
 
-          // Dump the HELLO request being sent
-          // std::cout << messageEncoder.data() << '\n';
         }
 
       } else {
