@@ -33,7 +33,8 @@ enb_stack_lte::enb_stack_lte(srslte::logger* logger_) :
   timers(128),
   logger(logger_),
   pdcp(&timers, &pdcp_log),
-  thread("STACK")
+  thread("STACK"),
+  agent(0)
 {
   enb_queue_id  = pending_tasks.add_queue();
   sync_queue_id = pending_tasks.add_queue();
@@ -54,9 +55,10 @@ std::string enb_stack_lte::get_type()
   return "lte";
 }
 
-int enb_stack_lte::init(const stack_args_t& args_, const rrc_cfg_t& rrc_cfg_, phy_interface_stack_lte* phy_)
+int enb_stack_lte::init(const stack_args_t& args_, Empower::Agent::agent *agent_, const rrc_cfg_t& rrc_cfg_, phy_interface_stack_lte* phy_)
 {
   phy = phy_;
+  agent = agent_;
   if (init(args_, rrc_cfg_)) {
     return SRSLTE_ERROR;
   }
@@ -146,7 +148,7 @@ int enb_stack_lte::init(const stack_args_t& args_, const rrc_cfg_t& rrc_cfg_)
   mac.init(args.mac, &cell_cfg, phy, &rlc, &rrc, this, &mac_log);
   rlc.init(&pdcp, &rrc, &mac, &timers, &rlc_log);
   pdcp.init(&rlc, &rrc, &gtpu);
-  rrc.init(&rrc_cfg, phy, &mac, &rlc, &pdcp, &s1ap, &gtpu, &timers, &rrc_log);
+  rrc.init(&rrc_cfg, phy, &mac, &rlc, &pdcp, &s1ap, agent, &gtpu, &timers, &rrc_log);
   s1ap.init(args.s1ap, &rrc, &s1ap_log, &timers, this);
   gtpu.init(args.s1ap.gtp_bind_addr,
             args.s1ap.mme_addr,

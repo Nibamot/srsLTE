@@ -225,6 +225,14 @@ public:
   get_bearer_status(uint16_t rnti, uint32_t lcid, uint16_t* dlsn, uint16_t* dlhfn, uint16_t* ulsn, uint16_t* ulhfn) = 0;
 };
 
+// Agent interface for RRC
+class agent_interface_rrc
+{
+public:
+  virtual void add_user(uint16_t rnti) = 0;
+  virtual void rem_user(uint16_t rnti) = 0;
+};
+
 // PDCP interface for RLC
 class pdcp_interface_rlc
 {

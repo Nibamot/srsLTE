@@ -194,9 +194,9 @@ void parse_args(all_args_t* args, int argc, char* argv[])
     ("embms.m1u_if_addr", bpo::value<string>(&args->stack.embms.m1u_if_addr)->default_value("127.0.1.201"), "IP address of the interface the eNB will listen for M1-U traffic.")
 
     // empoweragent section
-    ("empoweragent.controller_addr", bpo::value<string>(&args->empoweragent.controller_addr)->default_value("127.0.0.1"), "IP address of the Empower controller.")
-    ("empoweragent.controller_port", bpo::value<uint16_t>(&args->empoweragent.controller_port)->default_value(2110), "TCP port of the Empower controller.")
-    ("empoweragent.delayms", bpo::value<uint32_t>(&args->empoweragent.delayms)->default_value(1500), "Default delay ")
+    ("agent.controller_address", bpo::value<string>(&args->agent.controller_address)->default_value("127.0.0.1"), "IP address of the Empower controller.")
+    ("agent.controller_port", bpo::value<uint16_t>(&args->agent.controller_port)->default_value(5533), "TCP port of the Empower controller.")
+    ("aget.delayms", bpo::value<uint32_t>(&args->agent.delayms)->default_value(2000), "Default delay ")
     ;
 
   // Positional options - config file location

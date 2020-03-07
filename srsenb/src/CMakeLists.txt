@@ -35,7 +35,7 @@ endif (RPATH)
 
 add_library(enb_cfg_parser parser.cc enb_cfg_parser.cc)
 
-add_executable(srsenb main.cc enb.cc metrics_stdout.cc metrics_csv.cc empoweragent.cc)
+add_executable(srsenb main.cc enb.cc metrics_stdout.cc metrics_csv.cc agent.cc)
 target_link_libraries(srsenb  srsenb_radio
                               srsenb_phy
                               srsenb_stack

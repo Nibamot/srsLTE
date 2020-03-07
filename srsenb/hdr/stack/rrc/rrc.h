@@ -156,6 +156,17 @@ public:
             srslte::timer_handler* timers_,
             srslte::log*           log_rrc);
 
+  void init(rrc_cfg_t*             cfg,
+            phy_interface_rrc_lte* phy,
+            mac_interface_rrc*     mac,
+            rlc_interface_rrc*     rlc,
+            pdcp_interface_rrc*    pdcp,
+            s1ap_interface_rrc*    s1ap,
+			agent_interface_rrc*   agent,
+            gtpu_interface_rrc*    gtpu,
+            srslte::timer_handler* timers_,
+            srslte::log*           log_rrc);
+
   void stop();
   void get_metrics(rrc_metrics_t& m);
   void tti_clock();
@@ -352,6 +363,7 @@ private:
   pdcp_interface_rrc*       pdcp    = nullptr;
   gtpu_interface_rrc*       gtpu    = nullptr;
   s1ap_interface_rrc*       s1ap    = nullptr;
+  agent_interface_rrc*      agent   = nullptr;
   srslte::log*              rrc_log = nullptr;
 
   // state

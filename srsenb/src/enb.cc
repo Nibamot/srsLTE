@@ -107,11 +107,9 @@ int enb::init(const all_args_t& args_)
     return SRSLTE_ERROR;
   }
 
-  // Create an instance of the Empower agent
-  std::unique_ptr<Empower::Agent::Agent> lte_empowerAgent =
-      std::unique_ptr<Empower::Agent::Agent>(new Empower::Agent::Agent());
-  if (!lte_empowerAgent) {
-    log.console("Error initializing Empower agent.\n");
+  std::unique_ptr<Empower::Agent::agent> lte_agent = std::unique_ptr<Empower::Agent::agent>(new Empower::Agent::agent(logger));
+  if (!lte_agent) {
+    log.console("Error creating LTE Agent instance.\n");
     return SRSLTE_ERROR;
   }
 
@@ -126,24 +124,23 @@ int enb::init(const all_args_t& args_)
     return SRSLTE_ERROR;
   }
 
-  if (lte_stack->init(args.stack, rrc_cfg, lte_phy.get())) {
+  if (lte_stack->init(args.stack, lte_agent.get(), rrc_cfg, lte_phy.get())) {
     log.console("Error initializing stack.\n");
     return SRSLTE_ERROR;
   }
 
-  // Init the Empower agent
-  if (lte_empowerAgent->init(args)) {
+  if (lte_agent->init(args)) {
+	  log.console("Error initializing agent.\n");
       return SRSLTE_ERROR;
   }
 
   stack = std::move(lte_stack);
   phy   = std::move(lte_phy);
   radio = std::move(lte_radio);
-  empowerAgent = std::move(lte_empowerAgent);
+  agent = std::move(lte_agent);
 
-  // Attempt to start the Empower agent thread
-  if (empowerAgent->start()) {
-    log.console("Error starting the Empower agent thread.\n");
+  if (agent->start()) {
+    log.console("Error starting the agent.\n");
     return SRSLTE_ERROR;
   }
 

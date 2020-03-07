@@ -55,11 +55,26 @@ void rrc::init(rrc_cfg_t*             cfg_,
                srslte::timer_handler* timers_,
                srslte::log*           log_rrc)
 {
+	init(cfg_, phy_, mac_, rlc_, pdcp_, s1ap_, 0, gtpu_, timers_, log_rrc);
+}
+
+void rrc::init(rrc_cfg_t*             cfg_,
+               phy_interface_rrc_lte* phy_,
+               mac_interface_rrc*     mac_,
+               rlc_interface_rrc*     rlc_,
+               pdcp_interface_rrc*    pdcp_,
+               s1ap_interface_rrc*    s1ap_,
+			   agent_interface_rrc*   agent_,
+               gtpu_interface_rrc*    gtpu_,
+               srslte::timer_handler* timers_,
+               srslte::log*           log_rrc)
+{
   phy       = phy_;
   mac       = mac_;
   rlc       = rlc_;
   pdcp      = pdcp_;
   gtpu      = gtpu_;
+  agent     = agent_;
   s1ap      = s1ap_;
   rrc_log   = log_rrc;
   timers    = timers_;
@@ -207,6 +222,8 @@ void rrc::add_user(uint16_t rnti)
   } else {
     rrc_log->error("Adding user rnti=0x%x (already exists)\n", rnti);
   }
+
+  agent->add_user(rnti);
 
   if (rnti == SRSLTE_MRNTI) {
     uint32_t teid_in = 1;
@@ -769,6 +786,9 @@ void rrc::rem_user(uint16_t rnti)
     // And deallocate resources from RRC
     user_it->second->sr_free();
     user_it->second->cqi_free();
+
+    // Remove user from agent
+    agent->rem_user(rnti);
 
     users.erase(rnti);
     rrc_log->info("Removed user rnti=0x%x\n", rnti);

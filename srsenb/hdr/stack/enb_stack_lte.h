@@ -55,7 +55,7 @@ public:
   ~enb_stack_lte() final;
 
   // eNB stack base interface
-  int         init(const stack_args_t& args_, const rrc_cfg_t& rrc_cfg_, phy_interface_stack_lte* phy_);
+  int         init(const stack_args_t& args_, Empower::Agent::agent *agent, const rrc_cfg_t& rrc_cfg_, phy_interface_stack_lte* phy_);
   int         init(const stack_args_t& args_, const rrc_cfg_t& rrc_cfg_);
   void        stop() final;
   std::string get_type() final;
@@ -129,6 +129,7 @@ private:
   srsenb::rrc      rrc;
   srsenb::gtpu     gtpu;
   srsenb::s1ap     s1ap;
+  Empower::Agent::agent *agent;
 
   srslte::logger*           logger = nullptr;
   srslte::byte_buffer_pool* pool   = nullptr;

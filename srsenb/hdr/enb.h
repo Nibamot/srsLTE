@@ -32,6 +32,7 @@
 #include <stdarg.h>
 #include <string>
 
+#include "agent.h"
 #include "phy/phy.h"
 #include "srsenb/hdr/stack/rrc/rrc.h"
 
@@ -51,8 +52,6 @@
 #include "srslte/interfaces/enb_metrics_interface.h"
 #include "srslte/interfaces/sched_interface.h"
 #include "srslte/interfaces/ue_interfaces.h"
-
-#include "srsenb/hdr/empoweragent.h"
 
 namespace srsenb {
 
@@ -99,8 +98,8 @@ struct general_args_t {
   std::string eea_pref_list;
 };
 
-struct empoweragent_args_t {
-  std::string controller_addr;
+struct agent_args_t {
+  std::string controller_address;
   uint16_t    controller_port;
   uint32_t    delayms;
 };
@@ -114,7 +113,7 @@ struct all_args_t {
   general_args_t    general;
   phy_args_t        phy;
   stack_args_t      stack;
-  empoweragent_args_t empoweragent;
+  agent_args_t      agent;
 };
 
 /*******************************************************************************
@@ -155,10 +154,10 @@ private:
   int parse_args(const all_args_t& args_);
 
   // eNB components
+  std::unique_ptr<Empower::Agent::agent>       agent = nullptr;
   std::unique_ptr<enb_stack_base>     stack = nullptr;
   std::unique_ptr<srslte::radio_base> radio = nullptr;
   std::unique_ptr<enb_phy_base>       phy   = nullptr;
-  std::unique_ptr<Empower::Agent::Agent>  empowerAgent = nullptr;
 
   srslte::logger_stdout logger_stdout;
   srslte::logger_file   logger_file;
